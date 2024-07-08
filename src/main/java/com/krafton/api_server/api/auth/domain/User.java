@@ -19,6 +19,7 @@ public class User {
 
     private String kakaoId;
     private String email;
+    private String username;
     private String nickname;
     private Role role;  // 시작 여부
     @Builder.Default

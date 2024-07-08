@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,7 +25,7 @@ public class SecurityConfig {
                         .disable())
                 .headers(headers -> headers.frameOptions().disable()) // h2
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers( "/**").permitAll() // h2
+                        .requestMatchers( "/", "/login/**","/api/**").permitAll() // h2
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

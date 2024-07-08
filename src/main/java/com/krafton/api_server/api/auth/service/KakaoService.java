@@ -30,30 +30,30 @@ public class KakaoService extends DefaultOAuth2UserService {
         Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
 
-        String nickname = properties != null ? (String) properties.get("nickname") : null;
+        String username = properties != null ? (String) properties.get("nickname") : null;
         String email = kakaoAccount != null ? (String) kakaoAccount.get("email") : null;
 
         log.info("Kakao ID: {}", kakaoId);
-        log.info("Nickname: {}", nickname);
+        log.info("Username: {}", username);
         log.info("Email: {}", email);
 
         // 사용자 정보를 처리하고 필요한 경우 DB에 저장
-        User user = saveOrUpdateUser(kakaoId, nickname, email);
+        User user = saveOrUpdateUser(kakaoId, username, email);
 
         // CustomOAuth2User 객체를 생성하여 반환
         return new CustomOAuth2User(oauth2User, user);
     }
 
-    private User saveOrUpdateUser(String kakaoId, String nickname, String email) {
+    private User saveOrUpdateUser(String kakaoId, String username, String email) {
         return userRepository.findByKakaoId(kakaoId)
                 .map(existingUser -> {
-                    existingUser.update(kakaoId, email, nickname);
+                    existingUser.update(kakaoId, email, username);
                     return userRepository.save(existingUser);
                 })
                 .orElseGet(() -> userRepository.save(User.builder()
                         .kakaoId(kakaoId)
                         .email(email)
-                        .nickname(nickname)
+                        .username(username)
                         .build()));
     }
 }

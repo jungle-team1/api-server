@@ -1,6 +1,5 @@
 package com.krafton.api_server.api.photo.controller;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -10,11 +9,13 @@ import com.krafton.api_server.api.photo.service.AwsS3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @Slf4j
@@ -30,7 +31,7 @@ public class AwsS3Controller {
     private String bucketName;
 
     @PostMapping("/resource")
-    public ResponseEntity<AwsS3> upload(
+    public ResponseEntity<AwsS3> uploadImage(
             @RequestPart("file") MultipartFile file
     ) throws IOException {
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -57,8 +58,13 @@ public class AwsS3Controller {
         return ResponseEntity.ok(awsS3);
     }
 
+    @GetMapping("/resource/{key}")
+    public ResponseEntity<InputStreamResource> getImage(@PathVariable("key") String key) throws FileNotFoundException {
+        return awsS3Service.getImage(key);
+    }
+
     @DeleteMapping("/resource/{key}")
-    public ResponseEntity<Void> delete(@PathVariable("key") String key) {
+    public ResponseEntity<Void> deleteImage(@PathVariable("key") String key) {
         try {
             awsS3Service.delete(key);
             return ResponseEntity.status(HttpStatus.OK).build();

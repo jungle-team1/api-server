@@ -38,8 +38,8 @@ public class CustomOAuth2User implements OAuth2User {
         return this.user.getEmail();
     }
 
-    public String getNickname() {
-        return this.user.getNickname();
+    public String getUsername() {
+        return this.user.getUsername();
     }
 
 

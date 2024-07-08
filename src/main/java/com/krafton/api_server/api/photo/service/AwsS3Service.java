@@ -1,20 +1,22 @@
 package com.krafton.api_server.api.photo.service;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import com.krafton.api_server.api.photo.domain.AwsS3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,8 +57,7 @@ public class AwsS3Service {
         if (file.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(file)){
                 fos.write(multipartFile.getBytes());
-            }
-            return Optional.of(file);
+            }            return Optional.of(file);
         }
         return Optional.empty();
     }
@@ -76,4 +77,21 @@ public class AwsS3Service {
             throw e;
         }
     }
+
+    public ResponseEntity<InputStreamResource> getImage(String key) throws FileNotFoundException {
+        try {
+            GetObjectRequest getObjectRequest = new GetObjectRequest(bucket, key);
+            S3Object s3Object = amazonS3.getObject(getObjectRequest);
+            InputStream inputStream = s3Object.getObjectContent();
+            InputStreamResource resource = new InputStreamResource(inputStream);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } catch (SdkClientException e) {
+            log.error("File not found in S3: {}", key);
+            throw new FileNotFoundException("File not found in S3: " + key);
+        }
+    }
+
 }

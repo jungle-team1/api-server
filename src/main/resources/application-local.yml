@@ -45,7 +45,7 @@ kakao:
   user-info : "https://kapi.kakao.com/v2/user/me"
 
 jwt:
-  secret : 123h4kljh123jkl4123k4h1234kjlh14123kl4h23kljh
+  secret :
 
 cloud:
   aws:

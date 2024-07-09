@@ -1,10 +1,9 @@
-package com.krafton.api_server.api.photo.domain;
+package com.krafton.api_server.api.image.domain;
 
 import com.krafton.api_server.api.auth.domain.User;
 import com.krafton.api_server.api.game.domain.GameType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,11 +13,11 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Photo {
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "photo_id")
+    @Column(name = "image_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)

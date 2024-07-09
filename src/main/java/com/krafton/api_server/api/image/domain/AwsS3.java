@@ -1,4 +1,4 @@
-package com.krafton.api_server.api.photo.domain;
+package com.krafton.api_server.api.image.domain;
 
 import lombok.Builder;
 import lombok.Getter;

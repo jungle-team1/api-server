@@ -10,26 +10,30 @@ import static com.krafton.api_server.api.room.dto.RoomRequest.RoomCreateRequest;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/room")
 @RestController
 public class RoomController {
 
     private final RoomService roomService;
 
-    @PostMapping("/room")
-    public ResponseEntity<Long> callCreateRoom(@RequestBody RoomCreateRequest roomCreateRequest) {
+    @PostMapping
+    public ResponseEntity<?> createRoom(@RequestBody RoomCreateRequest roomCreateRequest) {
+        if (roomCreateRequest.getKakaoId() == null) {
+            return ResponseEntity.badRequest().body("User ID cannot be null");
+        }
+        System.out.println("roomCreateRequest.getKakaoId() = " + roomCreateRequest.getKakaoId());
         Long roomId = roomService.createRoom(roomCreateRequest);
         return ResponseEntity.ok(roomId);
     }
 
-    @PostMapping("/room/{roomId}/join")
-    public void callJoinRoom(@PathVariable Long roomId, @RequestBody RoomCreateRequest roomCreateRequest) {
-        roomService.joinRoom(roomId, roomCreateRequest);
+    @PostMapping("/{roomId}/join")
+    public void joinRoom(@PathVariable("roomId") Long roomId, @RequestBody RoomCreateRequest request) {
+        roomService.joinRoom(roomId, request);
     }
 
-    @PostMapping("/room/{roomId}/exit")
-    public void callExitRoom(@PathVariable Long roomId, @RequestBody RoomCreateRequest roomCreateRequest) {
-        roomService.exitRoom(roomId, roomCreateRequest);
+    @PostMapping("/{roomId}/exit")
+    public void exitRoom(@PathVariable("roomId") Long roomId, @RequestBody RoomCreateRequest request) {
+        roomService.exitRoom(roomId, request);
     }
 
 }

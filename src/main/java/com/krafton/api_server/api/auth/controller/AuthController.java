@@ -1,10 +1,7 @@
 package com.krafton.api_server.api.auth.controller;
 
-import com.krafton.api_server.api.auth.dto.KakaoTokenDto;
 import com.krafton.api_server.api.auth.dto.LoginResponseDto;
 import com.krafton.api_server.api.auth.service.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

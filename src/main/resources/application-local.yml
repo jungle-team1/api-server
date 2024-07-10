@@ -36,26 +36,22 @@ logging.level:
 
 kakao:
   client-name: kakao
-  client-id: 47591bf8fcd26598c6b8745218ae96c2
+  client-id: ee30b5c779d184bb98861003dae53e6e
   redirect-uri: "http://localhost:5173/auth/kakao/callback"
   token-uri : "https://kauth.kakao.com/oauth/token"
   scope:
     - profile_nickname
-    - account_email
   user-info : "https://kapi.kakao.com/v2/user/me"
-
-jwt:
-  secret :
 
 cloud:
   aws:
     credentials:
-      access-key:
-      secret-key:
+      access-key: AKIAW3MEEULJA5IDOTSU
+      secret-key: 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
     region:
       static: us-east-1  # 버킷의 리전
     s3:
-      bucket:
+      bucket: 'test-ivk-bucket'
     stack:
       auto: false
     cloud_front_url:

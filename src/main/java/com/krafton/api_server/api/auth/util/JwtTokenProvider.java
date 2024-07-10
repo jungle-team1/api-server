@@ -3,16 +3,21 @@ package com.krafton.api_server.api.auth.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final SecretKey secretKey;
+
+    public JwtTokenProvider() {
+        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    }
 
     public String createAccessToken(Long kakaoId) {
         Claims claims = Jwts.claims().setSubject(kakaoId.toString());

@@ -26,6 +26,8 @@ public class ImageController {
             @RequestParam("mask_y1") int maskY1,
             @RequestParam("mask_x2") int maskX2,
             @RequestParam("mask_y2") int maskY2,
+            @RequestParam("roomId") String roomId,
+            @RequestParam("userId") String userId,
             @RequestParam("prompt") String prompt) {
         try {
             // 이미지 처리
@@ -39,7 +41,7 @@ public class ImageController {
             );
 
             // S3에 업로드
-            AwsS3 uploadResult = awsS3Service.upload(processedImage, "inpainted");
+            AwsS3 uploadResult = awsS3Service.upload(processedImage, "mode2", roomId, userId);
 
             return ResponseEntity.ok(uploadResult);
         } catch (Exception e) {

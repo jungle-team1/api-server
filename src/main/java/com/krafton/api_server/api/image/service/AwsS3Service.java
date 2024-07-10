@@ -2,9 +2,7 @@ package com.krafton.api_server.api.image.service;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import com.krafton.api_server.api.image.domain.AwsS3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,8 +26,8 @@ public class AwsS3Service {
     @Value("${cloud.aws.cloud_front_url}")
     private String frontCloudUrl;
 
-    public AwsS3 upload(MultipartFile file, String dirName) throws IOException {
-        String objectKey = createObjectKey(dirName, file.getOriginalFilename());
+    public AwsS3 upload(MultipartFile file, String mode, String roomId, String userId) throws IOException {
+        String objectKey = createObjectKey(mode, roomId, userId, file.getOriginalFilename());
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(file.getContentType());
@@ -61,8 +61,30 @@ public class AwsS3Service {
         }
     }
 
-    private String createObjectKey(String dirName, String fileName) {
-        return dirName + "/" + System.currentTimeMillis() + "_" + fileName;
+    public List<AwsS3> listImages(String prefix) {
+        ListObjectsV2Request listObjectsRequest = new ListObjectsV2Request()
+                .withBucketName(bucket)
+                .withPrefix(prefix);
+
+        ListObjectsV2Result result = amazonS3.listObjectsV2(listObjectsRequest);
+        List<S3ObjectSummary> objects = result.getObjectSummaries();
+
+        return objects.stream()
+                .map(object -> AwsS3.builder()
+                        .key(object.getKey())
+                        .path(getImageUrl(object.getKey()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public String getImageUrl(String key) {
+        return String.format("https://%s.s3.amazonaws.com/%s", bucket, key);
+
+    }
+
+    private String createObjectKey(String mode, String roomId, String userId, String fileName) {
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        return String.format("%s/%s/%s/%s_%s", mode, roomId, userId, timestamp, fileName);
     }
 
     private String getFullPath(String objectKey) {

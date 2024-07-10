@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,25 +22,50 @@ public class AwsS3Controller {
 
     private final AwsS3Service awsS3Service;
 
-    @PostMapping("/resource")
-    public ResponseEntity<AwsS3> upload(@RequestPart("file") MultipartFile file) {
+    @PostMapping("/image")
+    public ResponseEntity<Map<String, Object>> upload(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam("mode") String mode,
+            @RequestParam("roomId") String roomId,
+            @RequestParam("userId") String userId) {
+        Map<String, Object> response = new HashMap<>();
         try {
-            AwsS3 result = awsS3Service.upload(file, "upload");
-            return ResponseEntity.ok(result);
+            AwsS3 result = awsS3Service.upload(file, mode, roomId, userId);
+            response.put("success", true);
+            response.put("data", result);
+            log.info("File uploaded successfully: {}", result.getKey());
+            return ResponseEntity.ok(response);
         } catch (IOException e) {
-            log.error("Error uploading file to S3: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Error uploading file to S3: ", e);
+            response.put("success", false);
+            response.put("error", "File upload failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
-    @DeleteMapping("/resource/{key}")
-    public ResponseEntity<Void> delete(@PathVariable("key") String key) {
+    @DeleteMapping("/image/{key}")
+    public ResponseEntity<Map<String, Object>> delete(@PathVariable("key") String key) {
+        Map<String, Object> response = new HashMap<>();
         try {
             awsS3Service.delete(key);
-            return ResponseEntity.ok().build();
+            response.put("success", true);
+            response.put("message", "File deleted successfully");
+            log.info("File deleted successfully: {}", key);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("Error deleting file from S3: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Error deleting file from S3: ", e);
+            response.put("success", false);
+            response.put("error", "File deletion failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @GetMapping("/image/{mode}/{roomId}")
+    public ResponseEntity<List<AwsS3>> listImages(
+            @PathVariable("mode") String mode,
+            @PathVariable("roomId") String roomId) {
+        String prefix = mode + "/" + roomId + "/";
+        List<AwsS3> images = awsS3Service.listImages(prefix);
+        return ResponseEntity.ok(images);
     }
 }

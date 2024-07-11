@@ -9,9 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static com.krafton.api_server.api.room.dto.RoomRequest.RoomCreateRequest;
+import static com.krafton.api_server.api.room.dto.RoomRequest.RoomUser;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,12 +39,11 @@ public class RoomService {
         return createdRoom.getId();
     }
 
-    public void joinRoom(Long roomId, RoomCreateRequest roomCreateRequest) {
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new NoSuchElementException("Room not found with ID: " + roomId));
-        User joinedUser = userRepository.findByKakaoId(roomCreateRequest.getKakaoId())
-                .orElseThrow(() -> new NoSuchElementException("User not found with Kakao ID: " + roomCreateRequest.getKakaoId()));
+    public Long joinRoom(Long roomId, RoomCreateRequest roomCreateRequest) {
+        Room room = roomRepository.findById(roomId).orElseThrow(NoSuchElementException::new);
+        User joinedUser = userRepository.findByKakaoId(roomCreateRequest.getKakaoId()).orElseThrow(NoSuchElementException::new);
         room.joinRoom(joinedUser);
+        return room.getId();
     }
 
     public void exitRoom(Long roomId, RoomCreateRequest roomCreateRequest) {
@@ -55,5 +56,11 @@ public class RoomService {
         if (room.getParticipants().isEmpty()) {
             roomRepository.delete(room);
         }
+    }
+
+    public List<RoomUser> getRoomUsers(Long roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(NoSuchElementException::new);
+        List<User> participants = room.getParticipants();
+        return participants.stream().map(RoomUser::from).toList();
     }
 }

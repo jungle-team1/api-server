@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 import static com.krafton.api_server.api.room.dto.RoomRequest.RoomCreateRequest;
+import static com.krafton.api_server.api.room.dto.RoomRequest.RoomUser;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,6 +36,12 @@ public class RoomController {
     @PostMapping("/{roomId}/exit")
     public void exitRoom(@PathVariable("roomId") Long roomId, @RequestBody RoomCreateRequest request) {
         roomService.exitRoom(roomId, request);
+    }
+
+    @GetMapping("/room/{roomId}/users")
+    public ResponseEntity<List<RoomUser>> callRoomUsers(@PathVariable Long roomId) {
+        List<RoomUser> roomUsers = roomService.getRoomUsers(roomId);
+        return ResponseEntity.ok(roomUsers);
     }
 
 }

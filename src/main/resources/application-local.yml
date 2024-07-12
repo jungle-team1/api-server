@@ -46,12 +46,12 @@ kakao:
 cloud:
   aws:
     credentials:
-      access-key:
-      secret-key:
+      access-key: AKIAW3MEEULJA5IDOTSU
+      secret-key: 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
     region:
       static: us-east-1  # 버킷의 리전
     s3:
-      bucket:
+      bucket: 'test-ivk-bucket'
     stack:
       auto: false
     cloud_front_url:

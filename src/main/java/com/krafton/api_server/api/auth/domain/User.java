@@ -28,7 +28,6 @@ public class User {
     private Long totalPoint;
     private Long rank;
 
-
     @Builder
     public User(Long kakaoId, String username, String refreshToken) {
         this.kakaoId = kakaoId;

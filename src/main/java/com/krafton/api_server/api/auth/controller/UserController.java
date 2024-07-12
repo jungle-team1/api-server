@@ -6,10 +6,7 @@ import com.krafton.api_server.api.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,7 +16,7 @@ public class UserController {
     private final UserService userService;
 
     @PatchMapping("/api/users/{userId}/nickname")
-    public ResponseEntity<UserResponseDto> callUpdateNickname(@PathVariable Long userId, @RequestBody UserRequestDto request) {
+    public ResponseEntity<UserResponseDto> callUpdateNickname(@PathVariable("userId") Long userId, @RequestBody UserRequestDto request) {
         UserResponseDto updatedUser = userService.updateNickname(userId, request);
         return ResponseEntity.ok(updatedUser);
     }

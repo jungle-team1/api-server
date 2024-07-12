@@ -25,11 +25,11 @@ public class RoomService {
     private final RoomRepository roomRepository;
 
     public Long createRoom(RoomCreateRequest roomCreateRequest) {
-        if (roomCreateRequest.getKakaoId() == null) {
+        if (roomCreateRequest.getUserId() == null) {
             throw new IllegalArgumentException("Kakao ID cannot be null");
         }
-        User user = userRepository.findByKakaoId(roomCreateRequest.getKakaoId())
-                .orElseThrow(() -> new NoSuchElementException("User not found with Kakao ID: " + roomCreateRequest.getKakaoId()));
+        User user = userRepository.findById(roomCreateRequest.getUserId())
+                .orElseThrow(() -> new NoSuchElementException("User not found with User ID: " + roomCreateRequest.getUserId()));
 
         Room room = Room.builder()
                 .user(user)
@@ -41,7 +41,7 @@ public class RoomService {
 
     public Long joinRoom(Long roomId, RoomCreateRequest roomCreateRequest) {
         Room room = roomRepository.findById(roomId).orElseThrow(NoSuchElementException::new);
-        User joinedUser = userRepository.findByKakaoId(roomCreateRequest.getKakaoId()).orElseThrow(NoSuchElementException::new);
+        User joinedUser = userRepository.findByKakaoId(roomCreateRequest.getUserId()).orElseThrow(NoSuchElementException::new);
         room.joinRoom(joinedUser);
         return room.getId();
     }
@@ -49,8 +49,8 @@ public class RoomService {
     public void exitRoom(Long roomId, RoomCreateRequest roomCreateRequest) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new NoSuchElementException("Room not found with ID: " + roomId));
-        User exitedUser = userRepository.findByKakaoId(roomCreateRequest.getKakaoId())
-                .orElseThrow(() -> new NoSuchElementException("User not found with Kakao ID: " + roomCreateRequest.getKakaoId()));
+        User exitedUser = userRepository.findByKakaoId(roomCreateRequest.getUserId())
+                .orElseThrow(() -> new NoSuchElementException("User not found with Kakao ID: " + roomCreateRequest.getUserId()));
 
         room.exitRoom(exitedUser);
         if (room.getParticipants().isEmpty()) {

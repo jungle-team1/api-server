@@ -26,8 +26,8 @@ public class AwsS3Service {
     @Value("${cloud.aws.cloud_front_url}")
     private String frontCloudUrl;
 
-    public AwsS3 upload(MultipartFile file, String mode, String roomId, String userId) throws IOException {
-        String objectKey = createObjectKey(mode, roomId, userId, file.getOriginalFilename());
+    public AwsS3 upload(MultipartFile file,String roomId, String userId) throws IOException {
+        String objectKey = createObjectKey(roomId, userId, file.getOriginalFilename());
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(file.getContentType());
@@ -42,7 +42,7 @@ public class AwsS3Service {
 
         amazonS3.putObject(putObjectRequest);
 
-        String fileUrl = getFullPath(objectKey);
+        String fileUrl = getImageUrl(objectKey);
         return AwsS3.builder()
                 .key(objectKey)
                 .path(fileUrl)
@@ -78,16 +78,32 @@ public class AwsS3Service {
     }
 
     public String getImageUrl(String key) {
+
         return String.format("https://%s.s3.amazonaws.com/%s", bucket, key);
 
     }
 
-    private String createObjectKey(String mode, String roomId, String userId, String fileName) {
+    private String createObjectKey(String roomId, String userId, String fileName) {
         String timestamp = String.valueOf(System.currentTimeMillis());
-        return String.format("%s/%s/%s/%s_%s", mode, roomId, userId, timestamp, fileName);
+        return String.format("%s/%s/%s_%s", roomId, userId, timestamp, fileName);
     }
 
     private String getFullPath(String objectKey) {
         return frontCloudUrl + objectKey;
     }
+
+    public List<AwsS3> getImages(String roomId, String sort, Long excludeUserId) {
+        String prefix = roomId + "/" + sort + "/";
+        List<AwsS3> allImages = listImages(prefix);
+
+        if (excludeUserId != null) {
+            return allImages.stream()
+                    .filter(image -> !image.getKey().endsWith("/")) // 빈 "폴더" 객체 제외
+                    .filter(image -> !image.getKey().contains("/" + excludeUserId + "/"))
+                    .collect(Collectors.toList());
+        }
+
+        return allImages;
+    }
+
 }

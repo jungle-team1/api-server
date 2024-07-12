@@ -8,7 +8,7 @@ public class RoomRequest {
 
     @Getter
     public static class RoomCreateRequest {
-        private Long kakaoId;
+        private Long userId;
 
     }
 

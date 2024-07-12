@@ -20,10 +20,10 @@ public class RoomController {
 
     @PostMapping
     public ResponseEntity<?> createRoom(@RequestBody RoomCreateRequest roomCreateRequest) {
-        if (roomCreateRequest.getKakaoId() == null) {
+        if (roomCreateRequest.getUserId() == null) {
             return ResponseEntity.badRequest().body("User ID cannot be null");
         }
-        System.out.println("roomCreateRequest.getKakaoId() = " + roomCreateRequest.getKakaoId());
+        System.out.println("roomCreateRequest.getUserId() = " + roomCreateRequest.getUserId());
         Long roomId = roomService.createRoom(roomCreateRequest);
         return ResponseEntity.ok(roomId);
     }

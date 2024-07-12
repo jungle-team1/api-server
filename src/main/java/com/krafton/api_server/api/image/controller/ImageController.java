@@ -16,13 +16,35 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5000")
 @RequestMapping("/api/image")
 @RestController
 public class ImageController {
+
     private final ImageService imageService;
     private final AwsS3Service awsS3Service;
 
-    @CrossOrigin(origins = "http://localhost:5000")
+    @PostMapping("/upload")
+    public ResponseEntity<Map<String, AwsS3>> uploadImage(
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("roomId") String roomId,
+            @RequestParam("userId") String userId
+    ) {
+        try {
+            // 원본 이미지 S3에 업로드
+            AwsS3 originalUploadResult = awsS3Service.upload(image, roomId + "/og", userId);
+
+            // 결과를 Map으로 묶어서 반환
+            Map<String, AwsS3> result = new HashMap<>();
+            result.put("original", originalUploadResult);
+            System.out.println("result = " + result);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            log.error("Error processing image: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping("/inpaint")
     public ResponseEntity<Map<String, AwsS3>> inpaintImage(
             @RequestParam("image") MultipartFile image,
@@ -32,12 +54,9 @@ public class ImageController {
             @RequestParam("mask_y2") int maskY2,
             @RequestParam("roomId") String roomId,
             @RequestParam("userId") String userId,
-            @RequestParam("prompt") String prompt,
-            @RequestParam("mode") String mode) {
+            @RequestParam("prompt") String prompt
+    ) {
         try {
-            // 원본 이미지 S3에 업로드
-            AwsS3 originalUploadResult = awsS3Service.upload(image, mode, roomId, userId + "/og");
-
             // 이미지 처리
             MultipartFile processedImage = imageService.processImage(
                     image,
@@ -49,11 +68,10 @@ public class ImageController {
             );
 
             // 생성된 이미지 S3에 업로드
-            AwsS3 generatedUploadResult = awsS3Service.upload(processedImage, mode, roomId, userId + "/gen");
+            AwsS3 generatedUploadResult = awsS3Service.upload(processedImage, roomId + "/gen", userId);
 
             // 결과를 Map으로 묶어서 반환
             Map<String, AwsS3> result = new HashMap<>();
-            result.put("original", originalUploadResult);
             result.put("generated", generatedUploadResult);
 
             return ResponseEntity.ok(result);
@@ -63,12 +81,12 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/{mode}/{roomId}")
-    public ResponseEntity<List<AwsS3>> listImages(
-            @PathVariable("mode") String mode,
-            @PathVariable("roomId") String roomId) {
-        String prefix = mode + "/" + roomId + "/";
-        List<AwsS3> images = awsS3Service.listImages(prefix);
+    @GetMapping("/{roomId}/{sort}")
+    public ResponseEntity<List<AwsS3>> getImages(
+            @PathVariable("roomId") String roomId,
+            @PathVariable("sort") String sort,
+            @RequestParam(value = "excludeUserId", required = false) Long excludeUserId) {
+        List<AwsS3> images = awsS3Service.getImages(roomId, sort, excludeUserId);
         return ResponseEntity.ok(images);
     }
 

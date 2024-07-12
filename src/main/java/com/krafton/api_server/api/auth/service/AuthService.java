@@ -11,6 +11,7 @@ import com.krafton.api_server.api.auth.dto.UserResponseDto;
 import com.krafton.api_server.api.auth.repository.UserRepository;
 import com.krafton.api_server.api.auth.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -42,7 +44,6 @@ public class AuthService {
     private String KAKAO_USER_URI;
 
     public String getKakaoAccessToken(String code) {
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
@@ -55,13 +56,16 @@ public class AuthService {
 
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest = new HttpEntity<>(params, headers);
 
+        log.warn("KakaoTokenRequest {} ", kakaoTokenRequest);
         RestTemplate rt = new RestTemplate();
+
         ResponseEntity<String> accessTokenResponse = rt.exchange(
                 KAKAO_TOKEN_URI, // https://kauth.kakao.com/oauth/token
                 HttpMethod.POST,
                 kakaoTokenRequest,
                 String.class
         );
+        log.warn("accessTokenResponse {}", accessTokenResponse);
 
         // JSON Parsing (KakaoTokenDto)
         ObjectMapper objectMapper = new ObjectMapper();
@@ -74,7 +78,6 @@ public class AuthService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
         return kakaoTokenDto.getAccess_token();
     }
 
@@ -92,8 +95,10 @@ public class AuthService {
                 kakaoUserInfoRequest,
                 String.class
         );
+
         String responseBody = userInfoResponse.getBody();
 
+        System.out.println("responseBody = " + responseBody);
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -122,7 +127,7 @@ public class AuthService {
                 .username(kakaoUserInfo.getKakaoAccount().getProfile().getNickname())
                 .refreshToken(refreshToken)
                 .build();
-        
+
         return userRepository.save(user);
     }
 

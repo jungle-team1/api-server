@@ -30,7 +30,7 @@ public class AwsS3Controller {
             @RequestParam("userId") String userId) {
         Map<String, Object> response = new HashMap<>();
         try {
-            AwsS3 result = awsS3Service.upload(file, mode, roomId, userId);
+            AwsS3 result = awsS3Service.upload(file, roomId, userId);
             response.put("success", true);
             response.put("data", result);
             log.info("File uploaded successfully: {}", result.getKey());

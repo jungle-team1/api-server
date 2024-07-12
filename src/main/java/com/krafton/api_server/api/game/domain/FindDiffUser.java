@@ -22,7 +22,10 @@ public class FindDiffUser {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "find_diff_game_id")
-    private FindDiffGame findDiffGame;
+    private FindDiffGame game;
+
+    @OneToOne(mappedBy = "user")
+    private FindDiffImage image;
 
     private int score;
 
@@ -32,8 +35,13 @@ public class FindDiffUser {
         this.score = 0;
     }
 
-
     public void addScore(int gameScore) {
         this.score += gameScore;
     }
+
+    public void updateImage(FindDiffImage image) {
+        this.image = image;
+    }
+
+
 }

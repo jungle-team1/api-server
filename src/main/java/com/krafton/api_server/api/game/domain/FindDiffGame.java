@@ -15,13 +15,15 @@ public class FindDiffGame {
     @Column(name = "find_diff_game_id")
     private Long id;
 
-    @OneToMany(mappedBy = "findDiffGame")
-    private List<FindDiffUser> findDiffUsers = new ArrayList<>();
+    @OneToMany(mappedBy = "game")
+    private List<FindDiffUser> users = new ArrayList<>();
 
-    @OneToMany(mappedBy = "findDiffGame")
-    private List<FindDiffImage> findDiffImages = new ArrayList<>();
+    @OneToMany(mappedBy = "game")
+    private List<FindDiffImage> images = new ArrayList<>();
 
     public void addUser(FindDiffUser user) {
-        findDiffUsers.add(user);
+        users.add(user);
     }
+
+
 }

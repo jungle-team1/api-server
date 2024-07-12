@@ -19,7 +19,7 @@ import java.util.Base64;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class ImageService {
+public class GenerateService {
 
     private final RestTemplate restTemplate;
 

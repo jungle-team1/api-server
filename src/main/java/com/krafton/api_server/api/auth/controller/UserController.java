@@ -1,5 +1,6 @@
 package com.krafton.api_server.api.auth.controller;
 
+import com.krafton.api_server.api.auth.dto.TempLogin;
 import com.krafton.api_server.api.auth.dto.UserRequestDto;
 import com.krafton.api_server.api.auth.dto.UserResponseDto;
 import com.krafton.api_server.api.auth.service.UserService;
@@ -19,5 +20,11 @@ public class UserController {
     public ResponseEntity<UserResponseDto> callUpdateNickname(@PathVariable("userId") Long userId, @RequestBody UserRequestDto request) {
         UserResponseDto updatedUser = userService.updateNickname(userId, request);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @PostMapping("/api/temp/login")
+    public ResponseEntity<UserResponseDto> tempLogin(@RequestBody TempLogin tempLogin) {
+        UserResponseDto response = userService.getTempLogin(tempLogin);
+        return ResponseEntity.ok(response);
     }
 }

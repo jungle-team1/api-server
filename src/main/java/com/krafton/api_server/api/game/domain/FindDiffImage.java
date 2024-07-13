@@ -55,4 +55,9 @@ public class FindDiffImage {
         this.game = game;
     }
 
+
+    public void updateOriginalUrl(String imageUrl) {
+        this.originalUrl = imageUrl;
+
+    }
 }

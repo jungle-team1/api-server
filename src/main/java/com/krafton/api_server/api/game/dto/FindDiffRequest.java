@@ -36,7 +36,15 @@ public class FindDiffRequest {
         private int maskY1;
         private int maskX2;
         private int maskY2;
-
     }
+
+    @Getter
+    @Setter
+    public static class FindDiffScoreRequestDto {
+        private Long gameId;
+        private Long userId;
+        private Long score;
+    }
+
 
 }

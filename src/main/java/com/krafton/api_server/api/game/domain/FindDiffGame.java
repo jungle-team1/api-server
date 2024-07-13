@@ -15,15 +15,14 @@ public class FindDiffGame {
     @Column(name = "find_diff_game_id")
     private Long id;
 
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FindDiffUser> users = new ArrayList<>();
 
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FindDiffImage> images = new ArrayList<>();
 
     public void addUser(FindDiffUser user) {
         users.add(user);
+        user.setGame(this);
     }
-
-
 }

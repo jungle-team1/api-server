@@ -1,10 +1,7 @@
 package com.krafton.api_server.api.game.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -22,26 +19,25 @@ public class FindDiffUser {
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "find_diff_game_id")
+    @Setter
     private FindDiffGame game;
 
     @OneToOne(mappedBy = "user")
     private FindDiffImage image;
 
-    private int score;
+    private Long score;
 
     @Builder
     public FindDiffUser(Long userId) {
         this.userId = userId;
-        this.score = 0;
+        this.score = 0L;
     }
 
-    public void addScore(int gameScore) {
+    public void addScore(Long gameScore) {
         this.score += gameScore;
     }
 
     public void updateImage(FindDiffImage image) {
         this.image = image;
     }
-
-
 }

@@ -1,6 +1,11 @@
 package com.krafton.api_server.api.game.controller;
 
+import com.amazonaws.Response;
+import com.krafton.api_server.api.auth.domain.User;
+import com.krafton.api_server.api.auth.repository.UserRepository;
 import com.krafton.api_server.api.game.dto.FindDiffRequest.FindDiffRequestDto;
+import com.krafton.api_server.api.game.dto.FindDiffResponse;
+import com.krafton.api_server.api.game.dto.FindDiffResponse.FindDiffGeneratedImageResponseDto;
 import com.krafton.api_server.api.game.service.FindDiffService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static com.krafton.api_server.api.game.dto.FindDiffRequest.*;
 
@@ -43,12 +49,22 @@ public class FindDiffController {
     }
 
     @GetMapping("/og/{gameId}/{userId}")
-    public List<String> getOriginalImages(@PathVariable("gameId") Long gameId, @PathVariable("userId") Long userId) {
-        return findDiffService.getOriginalImages(gameId, userId);
+    public ResponseEntity<List<String>> getOriginalImages(@PathVariable("gameId") Long gameId, @PathVariable("userId") Long userId) {
+        List<String> originalImages = findDiffService.getOriginalImages(gameId, userId);
+        log.warn("OriginalImages : {}", originalImages);
+        return ResponseEntity.ok(originalImages);
     }
 
     @GetMapping("/gen/{gameId}/{userId}")
-    public List<String> getGeneratedImages(@PathVariable("gameId") Long gameId, @PathVariable("userId") Long userId) {
-        return findDiffService.getGeneratedImages(gameId, userId);
+    public ResponseEntity<List<FindDiffGeneratedImageResponseDto>> getGeneratedImages(@PathVariable("gameId") Long gameId, @PathVariable("userId") Long userId) {
+        List<FindDiffGeneratedImageResponseDto> generatedImages = findDiffService.getGeneratedImages(gameId, userId);
+        log.warn("GeneratedImages : {}", generatedImages);
+        return ResponseEntity.ok(generatedImages);
+    }
+
+    @PostMapping("/score/{userId}")
+    public ResponseEntity<String> updateTotalScore(@RequestBody FindDiffScoreRequestDto request) {
+        findDiffService.updateScore(request);
+        return ResponseEntity.ok("OK");
     }
 }

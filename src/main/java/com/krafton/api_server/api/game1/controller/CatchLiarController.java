@@ -1,7 +1,7 @@
-package com.krafton.api_server.api.game.controller;
+package com.krafton.api_server.api.game1.controller;
 
-import com.krafton.api_server.api.game.dto.CatchLiarInfoResponseDto;
-import com.krafton.api_server.api.game.service.CatchLiarService;
+import com.krafton.api_server.api.game1.dto.CatchLiarInfoResponseDto;
+import com.krafton.api_server.api.game1.service.CatchLiarService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.krafton.api_server.api.game.dto.CatchLiarRequest.*;
-import static com.krafton.api_server.api.game.dto.CatchLiarRequest.CatchLiarInfoRequestDto;
+import static com.krafton.api_server.api.game1.dto.CatchLiarRequest.*;
+import static com.krafton.api_server.api.game1.dto.CatchLiarRequest.CatchLiarInfoRequestDto;
 
 @Slf4j
 @RequiredArgsConstructor

@@ -41,7 +41,7 @@ public class GenerateService {
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        String flaskServerUrl = "http://localhost:5000";
+        String flaskServerUrl = "http://13.125.37.108:5000/";
         ResponseEntity<byte[]> response = restTemplate.exchange(
                 flaskServerUrl + "/inpaint",
                 HttpMethod.POST,

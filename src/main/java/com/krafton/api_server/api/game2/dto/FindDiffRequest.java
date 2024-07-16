@@ -31,6 +31,7 @@ public class FindDiffRequest {
         private Long userId;
         private Long roomId;
         private MultipartFile image;
+        private MultipartFile mask;
         private String prompt;
         private Long maskX1;
         private Long maskY1;

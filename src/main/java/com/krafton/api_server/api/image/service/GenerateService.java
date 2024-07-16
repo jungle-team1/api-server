@@ -21,8 +21,7 @@ public class GenerateService {
 
     private final RestTemplate restTemplate;
 
-    public MultipartFile processImage(MultipartFile image, Long maskX1, Long maskY1, Long maskX2, Long maskY2, String prompt) throws IOException {
-        log.info("Received mask coordinates: x1={}, y1={}, x2={}, y2={}", maskX1, maskY1, maskX2, maskY2);
+    public MultipartFile processImage(MultipartFile image, MultipartFile mask, String prompt) throws IOException {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("image", new ByteArrayResource(image.getBytes()) {
             @Override
@@ -30,10 +29,14 @@ public class GenerateService {
                 return image.getOriginalFilename();
             }
         });
-        body.add("mask_x1", String.valueOf(maskX1));
-        body.add("mask_y1", String.valueOf(maskY1));
-        body.add("mask_x2", String.valueOf(maskX2));
-        body.add("mask_y2", String.valueOf(maskY2));
+
+        body.add("mask", new ByteArrayResource(mask.getBytes()) {
+            @Override
+            public String getFilename() {
+                return image.getOriginalFilename();
+            }
+        });
+
         body.add("prompt", prompt);
 
         HttpHeaders headers = new HttpHeaders();
@@ -41,7 +44,7 @@ public class GenerateService {
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        String flaskServerUrl = "http://13.125.37.108:5000/";
+        String flaskServerUrl = "http://3.38.98.172:5000/";
         ResponseEntity<byte[]> response = restTemplate.exchange(
                 flaskServerUrl + "/inpaint",
                 HttpMethod.POST,

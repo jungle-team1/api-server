@@ -33,6 +33,7 @@ public class FindDiffController {
     @PostMapping(value = "/inpaint", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> saveGeneratedImage(
             @RequestParam("image") MultipartFile image,
+            @RequestParam("mask") MultipartFile mask,
             @RequestParam("roomId") Long roomId,
             @RequestParam("userId") Long userId,
             @RequestParam("prompt") String prompt,
@@ -43,6 +44,7 @@ public class FindDiffController {
 
         FindDiffGeneratedImageRequestDto request = new FindDiffGeneratedImageRequestDto();
         request.setImage(image);
+        request.setMask(mask);
         request.setRoomId(roomId);
         request.setUserId(userId);
         request.setPrompt(prompt);
